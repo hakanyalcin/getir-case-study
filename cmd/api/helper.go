@@ -72,3 +72,22 @@ func (app *application) badRequest(w http.ResponseWriter, r *http.Request, err e
 	w.Write(out)
 	return nil
 }
+
+func (app *application) unsupportedMethod(w http.ResponseWriter, r *http.Request) {
+	var payload struct {
+		Code    int    `json:"error"`
+		Message string `json:"message"`
+	}
+
+	payload.Code = 2
+	payload.Message = "MethodNotAllowed: Unsupported Protocol"
+
+	out, err := json.MarshalIndent(payload, "", "\t")
+	if err != nil {
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusMethodNotAllowed)
+	w.Write(out)
+}

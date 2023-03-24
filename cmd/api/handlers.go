@@ -8,6 +8,11 @@ import (
 )
 
 func (app *application) getRecords(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		app.unsupportedMethod(w, r)
+		return
+
+	}
 	var payload models.RecordPayload
 	err := app.readJSON(w, r, &payload)
 	if err != nil {
