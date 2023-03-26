@@ -18,6 +18,7 @@ type LocalCache struct {
 	Entries map[string]CachedEnty
 }
 
+// creating local cache when http server spin up
 func NewLocalCache() *LocalCache {
 	lc := &LocalCache{
 		Entries: make(map[string]CachedEnty),

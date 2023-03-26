@@ -2,44 +2,41 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
+// DBModel is the type for database connection values
 type DBModel struct {
-	DB *mongo.Client
+	DB *mongo.Database
 }
 
-type Models struct {
-	DB DBModel
-}
-
-// NewModels returns a model type with database connection pool
-func NewModels(db *mongo.Client) Models {
-	return Models{
-		DB: DBModel{DB: db},
-	}
-}
-
-// Record is the type for all records
+// Record is the type for record on the db
 type Record struct {
 	Key       string    `json:"key" bson:"key"`
 	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
 	Counts    int       `json:"counts" bson:"totalCount"`
 }
+
+// RecordPayload is the type for request body
 type RecordPayload struct {
 	StartDate string `json:"startDate"`
 	EndDate   string `json:"endDate"`
 	MinCount  int    `json:"minCount"`
 	MaxCount  int    `json:"maxCount"`
 }
+
+// RecordResponse is the type for response body
 type RecordResponse struct {
 	Code    int      `json:"code"`
 	Msg     string   `json:"msg"`
 	Records []Record `json:"records"`
 }
+
+// CachePayload is the type for request body
 type CachePayload struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
@@ -75,9 +72,15 @@ func (m *DBModel) GetRecords(payload RecordPayload) ([]Record, error) {
 		},
 	}
 
-	col := m.DB.Database("getircase-study").Collection("records")
+	col := m.DB.Collection("records")
 	cursor, err := col.Aggregate(context.TODO(), pipe)
-	defer cursor.Close(context.TODO())
+
+	defer func(cursor *mongo.Cursor, ctx context.Context) {
+		err := cursor.Close(ctx)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}(cursor, context.TODO())
 	if err != nil {
 		return records, err
 	}
@@ -86,5 +89,4 @@ func (m *DBModel) GetRecords(payload RecordPayload) ([]Record, error) {
 	}
 
 	return records, nil
-
 }
