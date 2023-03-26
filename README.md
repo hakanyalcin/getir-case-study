@@ -6,21 +6,21 @@
 
 # Endpoints
 - ## Get Entry From In-memory Database
-  - ```bash
+```bash
 curl --location 'http://18.185.42.203/in-memory?key=test_key'
-     ```
+```
 - ## Set Entry To In-memory Database
-    - ```bash
+```bash
 curl --location 'http://18.185.42.203/in-memory' \
 --header 'Content-Type: application/json' \
 --data '{
 "key": "test_key",
 "value": "test_value"
 }'
-      ```
+ ```
 - ## Get Data From Mongo DB
-  - ```bash
-      curl --location 'http://18.185.42.203/records' \
+```bash
+curl --location 'http://18.185.42.203/records' \
 --header 'Content-Type: application/json' \
 --data '{
 "startDate": "2011-01-28",
@@ -29,4 +29,4 @@ curl --location 'http://18.185.42.203/in-memory' \
 "maxCount": 3000
 }
 '
-     ```
+```
