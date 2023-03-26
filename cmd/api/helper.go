@@ -80,7 +80,7 @@ func (app *application) unsupportedMethod(w http.ResponseWriter, r *http.Request
 	}
 
 	payload.Code = 2
-	payload.Message = "MethodNotAllowed: Unsupported Protocol"
+	payload.Message = "MethodNotAllowed: Unsupported Method"
 
 	out, err := json.MarshalIndent(payload, "", "\t")
 	if err != nil {
@@ -90,4 +90,42 @@ func (app *application) unsupportedMethod(w http.ResponseWriter, r *http.Request
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusMethodNotAllowed)
 	w.Write(out)
+}
+
+func (app *application) cacheMissing(w http.ResponseWriter, r *http.Request, err error) error {
+	var payload struct {
+		Message string `json:"message"`
+	}
+
+	payload.Message = err.Error()
+
+	out, err := json.MarshalIndent(payload, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusBadRequest)
+	w.Write(out)
+	return nil
+}
+
+func (app *application) internalServerError(w http.ResponseWriter, r *http.Request, err error) error {
+	var payload struct {
+		Code    int    `json:"error"`
+		Message string `json:"message"`
+	}
+
+	payload.Code = 2
+	payload.Message = err.Error()
+
+	out, err := json.MarshalIndent(payload, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusBadRequest)
+	w.Write(out)
+	return nil
 }

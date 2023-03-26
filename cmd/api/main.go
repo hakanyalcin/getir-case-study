@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"getir-case-study/internal/cache"
@@ -37,7 +38,6 @@ func (app *application) serve() error {
 		}
 	})
 	http.HandleFunc("/records", app.getRecords)
-
 	srv := &http.Server{
 		Addr: fmt.Sprintf(":%d", app.config.port),
 	}
@@ -63,6 +63,7 @@ func main() {
 	if err != nil {
 		errorLog.Fatal(err)
 	}
+	defer conn.Disconnect(context.TODO())
 
 	app := &application{
 		config:   cfg,

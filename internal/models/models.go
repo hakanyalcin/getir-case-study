@@ -77,7 +77,7 @@ func (m *DBModel) GetRecords(payload RecordPayload) ([]Record, error) {
 
 	col := m.DB.Database("getircase-study").Collection("records")
 	cursor, err := col.Aggregate(context.TODO(), pipe)
-	// defer cursor.Close(context.TODO())
+	defer cursor.Close(context.TODO())
 	if err != nil {
 		return records, err
 	}

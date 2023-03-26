@@ -37,15 +37,11 @@ func (lc *LocalCache) SetEntry(e models.CachePayload) (Entry, error) {
 	return entry, nil
 }
 
-var (
-	errUserNotInCache = errors.New("cache missing: The key isn't in cache")
-)
-
 func (lc *LocalCache) GetEntry(key string) (Entry, error) {
 
 	cu, ok := lc.Entries[key]
 	if !ok {
-		return Entry{}, errUserNotInCache
+		return Entry{}, errors.New("cache missing: The key isn't in cache")
 	}
 
 	return cu.Entry, nil

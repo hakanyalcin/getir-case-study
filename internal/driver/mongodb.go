@@ -23,7 +23,6 @@ func ConnectDB(dsn string) (*mongo.Client, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	// defer client.Disconnect(ctx)
 
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {

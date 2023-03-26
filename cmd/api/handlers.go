@@ -11,7 +11,6 @@ func (app *application) getRecords(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		app.unsupportedMethod(w, r)
 		return
-
 	}
 	var payload models.RecordPayload
 	err := app.readJSON(w, r, &payload)
@@ -29,13 +28,17 @@ func (app *application) getRecords(w http.ResponseWriter, r *http.Request) {
 
 	res, err := app.DB.GetRecords(record)
 	if err != nil {
-		app.badRequest(w, r, err)
+		app.internalServerError(w, r, err)
 		return
 	}
 	app.writeJSON(w, http.StatusOK, res)
 }
 
 func (app *application) setEntry(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		app.unsupportedMethod(w, r)
+		return
+	}
 	var payload models.CachePayload
 	err := app.readJSON(w, r, &payload)
 	if err != nil {
@@ -49,6 +52,7 @@ func (app *application) setEntry(w http.ResponseWriter, r *http.Request) {
 	}
 	res, err := app.cache.SetEntry(entry)
 	if err != nil {
+		app.internalServerError(w, r, err)
 		return
 	}
 	out, err := json.MarshalIndent(res, "", "\t")
@@ -61,11 +65,15 @@ func (app *application) setEntry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) getEntry(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		app.unsupportedMethod(w, r)
+		return
+	}
 	id := r.URL.Query().Get("key")
 
 	res, err := app.cache.GetEntry(id)
 	if err != nil {
-		app.badRequest(w, r, err)
+		app.cacheMissing(w, r, err)
 		return
 	}
 	out, err := json.MarshalIndent(res, "", "\t")
