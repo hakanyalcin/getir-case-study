@@ -112,7 +112,7 @@ func (app *application) serverErrorResponse(w http.ResponseWriter, r *http.Reque
 		Message string `json:"message"`
 	}
 
-	payload.Code = 2
+	payload.Code = 3
 	payload.Message = err.Error()
 
 	out, err := json.MarshalIndent(payload, "", "\t")
